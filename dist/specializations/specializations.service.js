@@ -17,28 +17,29 @@ let SpecializationsService = class SpecializationsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createSpecializationDto) {
-        return this.prisma.specialization.create({ data: createSpecializationDto });
-    }
-    findAll(params) {
-        return this.prisma.specialization.findMany({
-            ...params,
-            include: {
-                program: { select: { name: true, duration_semesters: true } },
-            }
-        });
-    }
+    create(d) { return this.prisma.specialization.create({ data: d }); }
+    findAll(p) { return this.prisma.specialization.findMany({ ...p, include: { program: true } }); }
     async findOne(id) {
-        const specialization = await this.prisma.specialization.findUnique({
-            where: { id },
-            include: {
-                program: { select: { name: true } },
-            }
-        });
-        if (!specialization) {
+        const r = await this.prisma.specialization.findUnique({ where: { id }, include: { program: true } });
+        if (!r)
+            throw new common_1.NotFoundException(`Specialization with ID ${id} not found.`);
+        return r;
+    }
+    async update(id, d) {
+        try {
+            return await this.prisma.specialization.update({ where: { id }, data: d });
+        }
+        catch (e) {
             throw new common_1.NotFoundException(`Specialization with ID ${id} not found.`);
         }
-        return specialization;
+    }
+    async remove(id) {
+        try {
+            return await this.prisma.specialization.delete({ where: { id } });
+        }
+        catch (e) {
+            throw new common_1.NotFoundException(`Specialization with ID ${id} not found.`);
+        }
     }
 };
 exports.SpecializationsService = SpecializationsService;

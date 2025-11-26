@@ -17,28 +17,29 @@ let TeachersService = class TeachersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createTeacherDto) {
-        return this.prisma.teacher.create({ data: createTeacherDto });
-    }
-    findAll(params) {
-        return this.prisma.teacher.findMany({
-            ...params,
-            include: {
-                courses: {
-                    select: { name: true, credits: true }
-                }
-            }
-        });
-    }
+    create(d) { return this.prisma.teacher.create({ data: d }); }
+    findAll(p) { return this.prisma.teacher.findMany({ ...p, include: { courses: true } }); }
     async findOne(id) {
-        const teacher = await this.prisma.teacher.findUnique({
-            where: { id },
-            include: { courses: { select: { name: true, credits: true } } }
-        });
-        if (!teacher) {
+        const r = await this.prisma.teacher.findUnique({ where: { id }, include: { courses: true } });
+        if (!r)
+            throw new common_1.NotFoundException(`Teacher with ID ${id} not found.`);
+        return r;
+    }
+    async update(id, d) {
+        try {
+            return await this.prisma.teacher.update({ where: { id }, data: d });
+        }
+        catch (e) {
             throw new common_1.NotFoundException(`Teacher with ID ${id} not found.`);
         }
-        return teacher;
+    }
+    async remove(id) {
+        try {
+            return await this.prisma.teacher.delete({ where: { id } });
+        }
+        catch (e) {
+            throw new common_1.NotFoundException(`Teacher with ID ${id} not found.`);
+        }
     }
 };
 exports.TeachersService = TeachersService;

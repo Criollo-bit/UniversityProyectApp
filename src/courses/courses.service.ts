@@ -1,51 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from '@prisma/client';
 
 @Injectable()
 export class CoursesService {
   constructor(private prisma: PrismaService) {}
-
-  // 1. POST: Crear
-  create(createCourseDto: CreateCourseDto): Promise<Course> {
-    return this.prisma.course.create({ data: createCourseDto });
-  }
-
-  // 2. GET ALL: Listado con Paginación
-  findAll(params: { skip?: number; take?: number; }) {
-    return this.prisma.course.findMany({
-      ...params,
-      // Inclui las 3 relaciones clave en el listado
-      include: {
-        teacher: { select: { firstName: true, lastName: true } },
-        semester: { select: { name: true, number: true } },
-        program: { select: { name: true } },
-      }
-    });
-  }
-
-  // 3. GET ONE: Por ID
+  // POST
+  create(d: CreateCourseDto): Promise<Course> { return this.prisma.course.create({ data: d }); }
+  // GET ALL
+  findAll(p: { skip?: number; take?: number; }) { return this.prisma.course.findMany({ ...p, include: { teacher: true, semester: true, program: true } }); }
+  // GET ONE
   async findOne(id: number): Promise<Course> {
-    const course = await this.prisma.course.findUnique({
-      where: { id },
-      include: {
-        teacher: { select: { firstName: true, lastName: true } },
-        semester: { select: { name: true, number: true } },
-        program: { select: { name: true } },
-        // Inclui a los estudiantes inscritos (N:M)
-        enrollments: { 
-          select: {
-            student: { select: { firstName: true, lastName: true } },
-            status: true,
-          }
-        }
-      }
+    const r = await this.prisma.course.findUnique({ 
+      where: { id }, 
+      include: { teacher: true, semester: true, program: true, enrollments: { include: { student: true } } }
     });
-
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${id} not found.`);
-    }
-    return course;
+    if (!r) throw new NotFoundException(`Course with ID ${id} not found.`);
+    return r;
+  }
+  // PATCH
+  async update(id: number, d: UpdateCourseDto): Promise<Course> {
+    try { return await this.prisma.course.update({ where: { id }, data: d }); } 
+    catch (e) { throw new NotFoundException(`Course with ID ${id} not found.`); }
+  }
+  // DELETE
+  async remove(id: number): Promise<Course> {
+    try { return await this.prisma.course.delete({ where: { id } }); } 
+    catch (e) { throw new NotFoundException(`Course with ID ${id} not found or has dependencies.`); }
   }
 }

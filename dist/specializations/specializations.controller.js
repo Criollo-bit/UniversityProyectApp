@@ -16,25 +16,20 @@ exports.SpecializationsController = void 0;
 const common_1 = require("@nestjs/common");
 const specializations_service_1 = require("./specializations.service");
 const create_specialization_dto_1 = require("./dto/create-specialization.dto");
+const update_specialization_dto_1 = require("./dto/update-specialization.dto");
 let SpecializationsController = class SpecializationsController {
-    specializationsService;
-    constructor(specializationsService) {
-        this.specializationsService = specializationsService;
+    s;
+    constructor(s) {
+        this.s = s;
     }
-    create(createSpecializationDto) {
-        return this.specializationsService.create(createSpecializationDto);
-    }
+    create(d) { return this.s.create(d); }
     findAll(page = '1', limit = '10') {
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
-        return this.specializationsService.findAll({
-            skip: (pageNum - 1) * limitNum,
-            take: limitNum,
-        });
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        return this.s.findAll({ skip, take: parseInt(limit) });
     }
-    findOne(id) {
-        return this.specializationsService.findOne(id);
-    }
+    findOne(id) { return this.s.findOne(id); }
+    update(id, d) { return this.s.update(id, d); }
+    remove(id) { return this.s.remove(id); }
 };
 exports.SpecializationsController = SpecializationsController;
 __decorate([
@@ -57,8 +52,23 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SpecializationsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_specialization_dto_1.UpdateSpecializationDto]),
+    __metadata("design:returntype", Promise)
+], SpecializationsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], SpecializationsController.prototype, "remove", null);
 exports.SpecializationsController = SpecializationsController = __decorate([
     (0, common_1.Controller)('specializations'),
     __metadata("design:paramtypes", [specializations_service_1.SpecializationsService])

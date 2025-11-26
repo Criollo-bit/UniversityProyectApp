@@ -16,25 +16,20 @@ exports.SemestersController = void 0;
 const common_1 = require("@nestjs/common");
 const semesters_service_1 = require("./semesters.service");
 const create_semester_dto_1 = require("./dto/create-semester.dto");
+const update_semester_dto_1 = require("./dto/update-semester.dto");
 let SemestersController = class SemestersController {
-    semestersService;
-    constructor(semestersService) {
-        this.semestersService = semestersService;
+    s;
+    constructor(s) {
+        this.s = s;
     }
-    create(createSemesterDto) {
-        return this.semestersService.create(createSemesterDto);
-    }
+    create(d) { return this.s.create(d); }
     findAll(page = '1', limit = '10') {
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
-        return this.semestersService.findAll({
-            skip: (pageNum - 1) * limitNum,
-            take: limitNum,
-        });
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        return this.s.findAll({ skip, take: parseInt(limit) });
     }
-    findOne(id) {
-        return this.semestersService.findOne(id);
-    }
+    findOne(id) { return this.s.findOne(id); }
+    update(id, d) { return this.s.update(id, d); }
+    remove(id) { return this.s.remove(id); }
 };
 exports.SemestersController = SemestersController;
 __decorate([
@@ -57,8 +52,23 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SemestersController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_semester_dto_1.UpdateSemesterDto]),
+    __metadata("design:returntype", Promise)
+], SemestersController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], SemestersController.prototype, "remove", null);
 exports.SemestersController = SemestersController = __decorate([
     (0, common_1.Controller)('semesters'),
     __metadata("design:paramtypes", [semesters_service_1.SemestersService])

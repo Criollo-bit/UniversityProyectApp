@@ -17,38 +17,32 @@ let CoursesService = class CoursesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createCourseDto) {
-        return this.prisma.course.create({ data: createCourseDto });
-    }
-    findAll(params) {
-        return this.prisma.course.findMany({
-            ...params,
-            include: {
-                teacher: { select: { firstName: true, lastName: true } },
-                semester: { select: { name: true, number: true } },
-                program: { select: { name: true } },
-            }
-        });
-    }
+    create(d) { return this.prisma.course.create({ data: d }); }
+    findAll(p) { return this.prisma.course.findMany({ ...p, include: { teacher: true, semester: true, program: true } }); }
     async findOne(id) {
-        const course = await this.prisma.course.findUnique({
+        const r = await this.prisma.course.findUnique({
             where: { id },
-            include: {
-                teacher: { select: { firstName: true, lastName: true } },
-                semester: { select: { name: true, number: true } },
-                program: { select: { name: true } },
-                enrollments: {
-                    select: {
-                        student: { select: { firstName: true, lastName: true } },
-                        status: true,
-                    }
-                }
-            }
+            include: { teacher: true, semester: true, program: true, enrollments: { include: { student: true } } }
         });
-        if (!course) {
+        if (!r)
+            throw new common_1.NotFoundException(`Course with ID ${id} not found.`);
+        return r;
+    }
+    async update(id, d) {
+        try {
+            return await this.prisma.course.update({ where: { id }, data: d });
+        }
+        catch (e) {
             throw new common_1.NotFoundException(`Course with ID ${id} not found.`);
         }
-        return course;
+    }
+    async remove(id) {
+        try {
+            return await this.prisma.course.delete({ where: { id } });
+        }
+        catch (e) {
+            throw new common_1.NotFoundException(`Course with ID ${id} not found or has dependencies.`);
+        }
     }
 };
 exports.CoursesService = CoursesService;

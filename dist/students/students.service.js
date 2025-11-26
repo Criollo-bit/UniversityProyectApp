@@ -17,38 +17,40 @@ let StudentsService = class StudentsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createStudentDto) {
-        return this.prisma.student.create({ data: createStudentDto });
-    }
-    findAll(params) {
-        return this.prisma.student.findMany({
-            ...params,
-            include: {
-                program: { select: { name: true } }
-            }
-        });
-    }
+    create(d) { return this.prisma.student.create({ data: d }); }
+    findAll(p) { return this.prisma.student.findMany({ ...p, include: { program: true } }); }
     async findOne(id) {
-        const student = await this.prisma.student.findUnique({
+        const r = await this.prisma.student.findUnique({
             where: { id },
             include: {
-                program: { select: { name: true } },
+                program: true,
                 enrollments: {
-                    where: {
-                        status: 'CURRENT',
-                    },
+                    where: { status: 'CURRENT' },
                     include: {
-                        course: {
-                            select: { name: true, credits: true },
-                        },
+                        course: { select: { name: true, credits: true } },
                     },
                 },
             },
         });
-        if (!student) {
+        if (!r)
+            throw new common_1.NotFoundException(`Student with ID ${id} not found.`);
+        return r;
+    }
+    async update(id, d) {
+        try {
+            return await this.prisma.student.update({ where: { id }, data: d });
+        }
+        catch (e) {
             throw new common_1.NotFoundException(`Student with ID ${id} not found.`);
         }
-        return student;
+    }
+    async remove(id) {
+        try {
+            return await this.prisma.student.delete({ where: { id } });
+        }
+        catch (e) {
+            throw new common_1.NotFoundException(`Student with ID ${id} not found.`);
+        }
     }
 };
 exports.StudentsService = StudentsService;

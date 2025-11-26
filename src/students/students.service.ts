@@ -1,53 +1,41 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from '@prisma/client';
 
 @Injectable()
 export class StudentsService {
   constructor(private prisma: PrismaService) {}
-
-  // 1. POST: Crear
-  create(createStudentDto: CreateStudentDto): Promise<Student> {
-    return this.prisma.student.create({ data: createStudentDto });
-  }
-
-  // 2. GET ALL: Listado con Paginación
-  findAll(params: { skip?: number; take?: number; }) {
-    return this.prisma.student.findMany({
-      ...params,
-      include: {
-        program: { select: { name: true } }
-      }
-    });
-  }
-
-  // 3. GET ONE: Incluye solo las materias que estan en cursando (Consulta Compleja)
+  // POST
+  create(d: CreateStudentDto): Promise<Student> { return this.prisma.student.create({ data: d }); }
+  // GET ALL
+  findAll(p: { skip?: number; take?: number; }) { return this.prisma.student.findMany({ ...p, include: { program: true } }); }
+// GET ONE (CONSULTA COMPLEJA)
   async findOne(id: number) {
-    const student = await this.prisma.student.findUnique({
+    const r = await this.prisma.student.findUnique({
       where: { id },
       include: {
-        program: { select: { name: true } },
-        // 💡 Consulta Compleja: Filtro dentro de la relación N:M
+        program: true,
         enrollments: { 
-          where: {
-            // Requisito: Filtrar solo inscripciones activas
-            status: 'CURRENT', 
-          },
-          // 💡 Simplificamos el select para solo incluir la relación course.
-          // Si el nombre de tu relación al curso no es 'course', debes ajustarlo aquí.
+          where: { status: 'CURRENT' }, 
           include: { 
-            course: {
-              select: { name: true, credits: true },
-            },
+            course: { select: { name: true, credits: true } },
           },
         },
       },
     });
-
-    if (!student) {
-      throw new NotFoundException(`Student with ID ${id} not found.`);
-    }
-    return student;
+    if (!r) throw new NotFoundException(`Student with ID ${id} not found.`);
+    return r;
+  }
+  // PATCH
+  async update(id: number, d: UpdateStudentDto): Promise<Student> {
+    try { return await this.prisma.student.update({ where: { id }, data: d }); } 
+    catch (e) { throw new NotFoundException(`Student with ID ${id} not found.`); }
+  }
+  // DELETE
+  async remove(id: number): Promise<Student> {
+    try { return await this.prisma.student.delete({ where: { id } }); } 
+    catch (e) { throw new NotFoundException(`Student with ID ${id} not found.`); }
   }
 }

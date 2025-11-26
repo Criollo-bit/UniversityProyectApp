@@ -17,30 +17,29 @@ let SemestersService = class SemestersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createSemesterDto) {
-        return this.prisma.semester.create({ data: createSemesterDto });
-    }
-    findAll(params) {
-        return this.prisma.semester.findMany({
-            ...params,
-            include: {
-                program: { select: { name: true } },
-                courses: { select: { name: true, credits: true } }
-            }
-        });
-    }
+    create(d) { return this.prisma.semester.create({ data: d }); }
+    findAll(p) { return this.prisma.semester.findMany({ ...p, include: { program: true, courses: true } }); }
     async findOne(id) {
-        const semester = await this.prisma.semester.findUnique({
-            where: { id },
-            include: {
-                program: { select: { name: true } },
-                courses: { select: { name: true, credits: true } }
-            }
-        });
-        if (!semester) {
+        const r = await this.prisma.semester.findUnique({ where: { id }, include: { program: true, courses: true } });
+        if (!r)
+            throw new common_1.NotFoundException(`Semester with ID ${id} not found.`);
+        return r;
+    }
+    async update(id, d) {
+        try {
+            return await this.prisma.semester.update({ where: { id }, data: d });
+        }
+        catch (e) {
             throw new common_1.NotFoundException(`Semester with ID ${id} not found.`);
         }
-        return semester;
+    }
+    async remove(id) {
+        try {
+            return await this.prisma.semester.delete({ where: { id } });
+        }
+        catch (e) {
+            throw new common_1.NotFoundException(`Semester with ID ${id} not found or has dependencies.`);
+        }
     }
 };
 exports.SemestersService = SemestersService;

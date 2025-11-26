@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-// Importaciones de todos los módulos creados:
-import { PrismaModule } from './prisma/prisma.module';
+import { PrismaModule } from './prisma/prisma.module'; 
 import { TeachersModule } from './teachers/teachers.module';
 import { StudentsModule } from './students/students.module'; 
 import { ProgramsModule } from './programs/programs.module';
 import { CoursesModule } from './courses/courses.module';
 import { SemestersModule } from './semesters/semesters.module';
 import { SpecializationsModule } from './specializations/specializations.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
   imports: [
-    // Listamos de modulos de la app :3
+    // modulos de la app :3
     PrismaModule, 
     TeachersModule,
     StudentsModule, 
@@ -19,6 +19,7 @@ import { SpecializationsModule } from './specializations/specializations.module'
     CoursesModule,
     SemestersModule,
     SpecializationsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],  

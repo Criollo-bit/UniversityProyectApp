@@ -16,25 +16,20 @@ exports.ProgramsController = void 0;
 const common_1 = require("@nestjs/common");
 const programs_service_1 = require("./programs.service");
 const create_program_dto_1 = require("./dto/create-program.dto");
+const update_program_dto_1 = require("./dto/update-program.dto");
 let ProgramsController = class ProgramsController {
-    programsService;
-    constructor(programsService) {
-        this.programsService = programsService;
+    s;
+    constructor(s) {
+        this.s = s;
     }
-    create(createProgramDto) {
-        return this.programsService.create(createProgramDto);
-    }
+    create(d) { return this.s.create(d); }
     findAll(page = '1', limit = '10') {
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
-        return this.programsService.findAll({
-            skip: (pageNum - 1) * limitNum,
-            take: limitNum,
-        });
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        return this.s.findAll({ skip, take: parseInt(limit) });
     }
-    findOne(id) {
-        return this.programsService.findOne(id);
-    }
+    findOne(id) { return this.s.findOne(id); }
+    update(id, d) { return this.s.update(id, d); }
+    remove(id) { return this.s.remove(id); }
 };
 exports.ProgramsController = ProgramsController;
 __decorate([
@@ -57,8 +52,23 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProgramsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_program_dto_1.UpdateProgramDto]),
+    __metadata("design:returntype", Promise)
+], ProgramsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ProgramsController.prototype, "remove", null);
 exports.ProgramsController = ProgramsController = __decorate([
     (0, common_1.Controller)('programs'),
     __metadata("design:paramtypes", [programs_service_1.ProgramsService])

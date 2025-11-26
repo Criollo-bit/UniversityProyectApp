@@ -17,32 +17,29 @@ let ProgramsService = class ProgramsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createProgramDto) {
-        return this.prisma.program.create({ data: createProgramDto });
-    }
-    findAll(params) {
-        return this.prisma.program.findMany({
-            ...params,
-            include: {
-                semesters: { select: { name: true, number: true } },
-                specializations: { select: { name: true } },
-            }
-        });
-    }
+    create(d) { return this.prisma.program.create({ data: d }); }
+    findAll(p) { return this.prisma.program.findMany({ ...p, include: { students: true, semesters: true, specializations: true } }); }
     async findOne(id) {
-        const program = await this.prisma.program.findUnique({
-            where: { id },
-            include: {
-                students: { select: { firstName: true, lastName: true } },
-                semesters: { select: { name: true, number: true } },
-                specializations: { select: { name: true } },
-                courses: { select: { name: true, credits: true } }
-            }
-        });
-        if (!program) {
+        const r = await this.prisma.program.findUnique({ where: { id }, include: { students: true, semesters: true, specializations: true, courses: true } });
+        if (!r)
+            throw new common_1.NotFoundException(`Program with ID ${id} not found.`);
+        return r;
+    }
+    async update(id, d) {
+        try {
+            return await this.prisma.program.update({ where: { id }, data: d });
+        }
+        catch (e) {
             throw new common_1.NotFoundException(`Program with ID ${id} not found.`);
         }
-        return program;
+    }
+    async remove(id) {
+        try {
+            return await this.prisma.program.delete({ where: { id } });
+        }
+        catch (e) {
+            throw new common_1.NotFoundException(`Program with ID ${id} not found or has dependencies.`);
+        }
     }
 };
 exports.ProgramsService = ProgramsService;

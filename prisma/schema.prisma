@@ -34,7 +34,7 @@ model Program {
   courses         Course[]
 }
 
-// 3. Specialization (Especialidad) - Relacionada con Program
+// 3. Specialization - Relacionada con Program
 model Specialization {
   id         Int      @id @default(autoincrement())
   name       String   @unique

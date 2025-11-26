@@ -16,25 +16,20 @@ exports.StudentsController = void 0;
 const common_1 = require("@nestjs/common");
 const students_service_1 = require("./students.service");
 const create_student_dto_1 = require("./dto/create-student.dto");
+const update_student_dto_1 = require("./dto/update-student.dto");
 let StudentsController = class StudentsController {
-    studentsService;
-    constructor(studentsService) {
-        this.studentsService = studentsService;
+    s;
+    constructor(s) {
+        this.s = s;
     }
-    create(createStudentDto) {
-        return this.studentsService.create(createStudentDto);
-    }
+    create(d) { return this.s.create(d); }
     findAll(page = '1', limit = '10') {
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
-        return this.studentsService.findAll({
-            skip: (pageNum - 1) * limitNum,
-            take: limitNum,
-        });
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        return this.s.findAll({ skip, take: parseInt(limit) });
     }
-    findOne(id) {
-        return this.studentsService.findOne(id);
-    }
+    findOne(id) { return this.s.findOne(id); }
+    update(id, d) { return this.s.update(id, d); }
+    remove(id) { return this.s.remove(id); }
 };
 exports.StudentsController = StudentsController;
 __decorate([
@@ -59,6 +54,21 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_student_dto_1.UpdateStudentDto]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "remove", null);
 exports.StudentsController = StudentsController = __decorate([
     (0, common_1.Controller)('students'),
     __metadata("design:paramtypes", [students_service_1.StudentsService])
