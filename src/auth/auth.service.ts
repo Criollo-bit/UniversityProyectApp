@@ -1,5 +1,3 @@
-// src/auth/auth.service.ts
-
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { StudentsService } from '../students/students.service';
 import { JwtService } from '@nestjs/jwt';
@@ -7,24 +5,32 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
-    private studentsService: StudentsService, // Usamos StudentsService para simular la DB
+    private studentsService: StudentsService,
     private jwtService: JwtService,
   ) {}
 
-  // 1. Validar Credenciales (Simulado para JWT)
+  // Validar Credenciales
   async validateUser(email: string, pass: string): Promise<any> {
-    // 🛑 Lógica Simplificada: Solo verifica que el usuario exista por email.
-    // En un proyecto real, se verificaría la contraseña hasheada.
+    //Busca al usuario
     const user = await this.studentsService.findOneByEmail(email);
 
-    if (user && pass === 'password') { // Simulamos que la contraseña es 'password'
-      const { email, id, firstName } = user;
-      return { id, email, firstName }; // Devuelve un objeto sin la contraseña
+    //Si no encuentra el usuario devuelve null inmediatamente.
+    if (!user) { 
+      return null; 
     }
+    
+    //Simulación de verificación de contraseña
+    if (pass === 'password') { 
+      // Si la contraseña es correcta prepara el payload del token
+      const { id, firstName } = user;
+      return { id, email: user.email, firstName }; 
+    }
+
+    //Si la contraseña es incorrecta
     return null;
   }
 
-  // 2. Generar Token JWT
+  //Generar Token JWT
   async login(user: any) {
     const payload = { 
       username: user.email, 

@@ -11,21 +11,21 @@ export declare class StudentsService {
         take?: number;
     }): import(".prisma/client").Prisma.PrismaPromise<({
         program: {
-            name: string;
             id: number;
+            name: string;
             duration_semesters: number;
         };
     } & {
+        id: number;
         firstName: string;
         lastName: string;
         email: string;
-        id: number;
         programId: number;
     })[]>;
     findOne(id: number): Promise<{
         program: {
-            name: string;
             id: number;
+            name: string;
             duration_semesters: number;
         };
         enrollments: ({
@@ -41,12 +41,19 @@ export declare class StudentsService {
             finalGrade: number | null;
         })[];
     } & {
+        id: number;
         firstName: string;
         lastName: string;
         email: string;
-        id: number;
         programId: number;
     }>;
+    findOneByEmail(email: string): Promise<{
+        id: number;
+        firstName: string;
+        lastName: string;
+        email: string;
+        programId: number;
+    } | null>;
     update(id: number, d: UpdateStudentDto): Promise<Student>;
     remove(id: number): Promise<Student>;
 }

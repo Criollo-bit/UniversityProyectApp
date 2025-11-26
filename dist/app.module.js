@@ -15,6 +15,7 @@ const programs_module_1 = require("./programs/programs.module");
 const courses_module_1 = require("./courses/courses.module");
 const semesters_module_1 = require("./semesters/semesters.module");
 const specializations_module_1 = require("./specializations/specializations.module");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -28,6 +29,7 @@ exports.AppModule = AppModule = __decorate([
             courses_module_1.CoursesModule,
             semesters_module_1.SemestersModule,
             specializations_module_1.SpecializationsModule,
+            auth_module_1.AuthModule,
         ],
         controllers: [],
         providers: [],

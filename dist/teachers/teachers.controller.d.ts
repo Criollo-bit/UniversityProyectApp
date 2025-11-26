@@ -8,19 +8,19 @@ export declare class TeachersController {
     create(d: CreateTeacherDto): Promise<Teacher>;
     findAll(page?: string, limit?: string): import(".prisma/client").Prisma.PrismaPromise<({
         courses: {
-            name: string;
             id: number;
-            programId: number;
+            name: string;
             description: string | null;
             credits: number;
             teacherId: number;
             semesterId: number;
+            programId: number;
         }[];
     } & {
+        id: number;
         firstName: string;
         lastName: string;
         email: string;
-        id: number;
     })[]>;
     findOne(id: number): Promise<Teacher>;
     update(id: number, d: UpdateTeacherDto): Promise<Teacher>;

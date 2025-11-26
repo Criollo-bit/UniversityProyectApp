@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const teachers_service_1 = require("./teachers.service");
 const create_teacher_dto_1 = require("./dto/create-teacher.dto");
 const update_teacher_dto_1 = require("./dto/update-teacher.dto");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let TeachersController = class TeachersController {
     s;
     constructor(s) {
@@ -40,6 +41,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TeachersController.prototype, "create", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),

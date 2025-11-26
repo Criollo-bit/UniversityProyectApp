@@ -8,21 +8,21 @@ export declare class StudentsController {
     create(d: CreateStudentDto): Promise<Student>;
     findAll(page?: string, limit?: string): import(".prisma/client").Prisma.PrismaPromise<({
         program: {
-            name: string;
             id: number;
+            name: string;
             duration_semesters: number;
         };
     } & {
+        id: number;
         firstName: string;
         lastName: string;
         email: string;
-        id: number;
         programId: number;
     })[]>;
     findOne(id: number): Promise<{
         program: {
-            name: string;
             id: number;
+            name: string;
             duration_semesters: number;
         };
         enrollments: ({
@@ -38,10 +38,10 @@ export declare class StudentsController {
             finalGrade: number | null;
         })[];
     } & {
+        id: number;
         firstName: string;
         lastName: string;
         email: string;
-        id: number;
         programId: number;
     }>;
     update(id: number, d: UpdateStudentDto): Promise<Student>;

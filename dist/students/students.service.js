@@ -36,6 +36,11 @@ let StudentsService = class StudentsService {
             throw new common_1.NotFoundException(`Student with ID ${id} not found.`);
         return r;
     }
+    async findOneByEmail(email) {
+        return this.prisma.student.findUnique({
+            where: { email },
+        });
+    }
     async update(id, d) {
         try {
             return await this.prisma.student.update({ where: { id }, data: d });
